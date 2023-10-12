@@ -4,5 +4,5 @@ FROM nginx
 COPY dist/ /usr/share/nginx/html/
 # 用本地的 nginx.conf 配置来替换nginx镜像里的默认配置 1
 COPY nginx.conf /etc/nginx/nginx.conf
-# 用本地的 default.conf 配置来替换nginx镜像里的默认配置 2
+# 用本地的 default.conf 配置来替换nginx镜像里的默认配置 2 3
 COPY default.conf /etc/nginx/conf.d/default.conf
