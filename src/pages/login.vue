@@ -1,22 +1,8 @@
 <template>
   <div class="login-wrapper">
-    <vue-particles
-      color="#dedede"
-      :particleOpacity="0.7"
-      :particlesNumber="100"
-      shapeType="star"
-      :particleSize="4"
-      linesColor="#dedede"
-      :linesWidth="1"
-      :lineLinked="true"
-      :lineOpacity="0.4"
-      :linesDistance="150"
-      :moveSpeed="3"
-      :hoverEffect="true"
-      hoverMode="grab"
-      :clickEffect="true"
-      clickMode="push"
-    ></vue-particles>
+    <vue-particles color="#dedede" :particleOpacity="0.7" :particlesNumber="100" shapeType="star" :particleSize="4"
+      linesColor="#dedede" :linesWidth="1" :lineLinked="true" :lineOpacity="0.4" :linesDistance="150" :moveSpeed="3"
+      :hoverEffect="true" hoverMode="grab" :clickEffect="true" clickMode="push"></vue-particles>
     <div class="login">
       <div class="projectName">
         <span>研讨会会情分析系统</span>
@@ -45,7 +31,10 @@ import axios from "axios";
 
 export default {
   data() {
-    return {};
+    return {
+      userName: '',
+      userInfo: ''
+    };
   },
   mixins: [Fetch],
   created() {
@@ -58,6 +47,31 @@ export default {
     window.removeEventListener("enter", this.login);
   },
   methods: {
+    getUserInfo() {
+      const path = '/api/getUserInfo';
+      axios.post(path, { name: this.userName })
+        .then(res => {
+          this.userInfo = res.data.reslist[0];
+          console.log(this.userInfo.name)
+          
+          sessionStorage.setItem(
+            "userInfo",
+            JSON.stringify({
+              admin: this.userInfo.name,
+              name: this.userInfo.name,
+              ID: this.userInfo.ID,
+              role: this.userInfo.role,
+              stuid: this.userInfo.stuid,
+              ispermanent: this.userInfo.ispermanent,
+              email: this.userInfo.email,
+              pd: this.userInfo.pd
+            })
+          );
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
     // 登陆
     login() {
       const userName = document.getElementById("userName").value;
@@ -67,18 +81,12 @@ export default {
         axios.post(path, { userName: userName, password: password })
           .then(res => {
             this.st = res.data.mess;
-            console.log(this.st);
-            console.log(res);
 
             // 把你的登录逻辑放入这里
             if (this.st === "登录成功") {
-              sessionStorage.setItem(
-                "userInfo",
-                JSON.stringify({
-                  admin: userName
-                })
-              );
-              this.$router.push("/MeetingInfo");
+              this.userName = userName,
+                this.getUserInfo()
+              this.$router.push("/MeetingProcess");
             } else {
               this.$message({
                 message: this.st,
@@ -89,49 +97,9 @@ export default {
           .catch(error => {
             console.error(error);
           });
-
-      //   this.$_fetch_login(
-      //     this.$qs.stringify({
-      //       userid: userName,
-      //       password: password,
-      //       username: userName,
-      //       identity: 0
-      //     })
-      //   ).then(res => {
-      //     if (res.status === 1) {
-      //       sessionStorage.setItem(
-      //         "userInfo",
-      //         JSON.stringify({
-      //           admin: userName
-      //         })
-      //       );
-      //       this.$router.push("/");
-      //     } else if (res.status === 0) {
-      //       this.$message({
-      //         message: "用户不存在！",
-      //         type: "error"
-      //       });
-      //     } else if (res.status === -1) {
-      //       this.$message({
-      //         message: "授权码过期！",
-      //         type: "error"
-      //       });
-      //     } else if (res.status === 2) {
-      //       this.$message({
-      //         message: "用户密码错误！",
-      //         type: "error"
-      //       });
-      //     }
-      //   });
-      // } else {
-      //   this.$message({
-      //     message: "账号密码不能为空！",
-      //     type: "warning"
-      //   });
-      // 
       }
     }
-    
+
   }
 };
 </script>
@@ -146,6 +114,7 @@ export default {
   overflow: hidden;
   width: 100%;
   height: 100%;
+
   .login {
     width: 400px;
     height: 345px;
@@ -155,6 +124,7 @@ export default {
     left: 50%;
     top: 50%;
     margin: -172px 0 0 -200px;
+
     .projectName {
       width: 50%;
       margin: 30px auto 30px;
@@ -162,11 +132,14 @@ export default {
       color: #fff;
       text-align: center;
     }
+
     .login-list {
       width: 90%;
       margin: 0 auto;
+
       li {
         margin-bottom: 15px;
+
         input {
           padding: 13px 10px;
           border: 1px solid #e6e6e6;
@@ -174,6 +147,7 @@ export default {
           font-size: 14px;
           width: 100%;
         }
+
         .btn {
           width: 100%;
           height: 45px;
@@ -184,10 +158,12 @@ export default {
           color: #fff;
           display: block;
           border-radius: 3px;
+
           &:hover {
             cursor: pointer;
           }
         }
+
         .tar:hover {
           color: #fff;
         }

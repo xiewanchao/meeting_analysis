@@ -6,14 +6,14 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-card class="invi-card" v-loading="loading">
+          <el-card class="invi-card" v-loading="loading" element-loading-text="邮件发送中，请稍等候一段时间">
             <div class="card-ti">
               邀请人员
             </div>
             <el-input type="text" prefix-icon="el-icon-search" v-model="kb_content" placeholder="请输入"
               style="cursor: pointer;" @keyup.enter.native="getAllKb"></el-input>
-
             <el-tabs :tab-position="'top'">
+              
               <!-- 全部 -->
               <el-tab-pane label="全部">
                 <el-table ref="allTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
@@ -24,45 +24,70 @@
                 </el-table>
               </el-tab-pane>
 
-              <!-- 导师 -->
-              <el-tab-pane label="导师">
-                <el-table ref="tutorTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
-                  :data="tutorData" @selection-change="handleSelectionChange">
+
+              <!-- 教师 -->
+              <el-tab-pane label="教师">
+                <el-table ref="teacherTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="teacherData" @selection-change="handleSelectionChange">
                   <el-table-column type="selection" width="55"></el-table-column>
                   <el-table-column prop="name" label="姓名" width="120"></el-table-column>
                   <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
                 </el-table>
               </el-tab-pane>
 
-              <!-- 学生 -->
-              <el-tab-pane label="学生">
-                <el-table ref="studentTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
-                  :data="studentData" @selection-change="handleSelectionChange">
+              <!-- 博士生 -->
+              <el-tab-pane label="博士生">
+                <el-table ref="phdStudentTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="phdStudentData" @selection-change="handleSelectionChange">
                   <el-table-column type="selection" width="55"></el-table-column>
                   <el-table-column prop="name" label="姓名" width="120"></el-table-column>
                   <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
                 </el-table>
               </el-tab-pane>
 
-              <!-- 毕业学生 -->
-              <el-tab-pane label="毕业学生">
-                <el-table ref="graduatedTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
-                  :data="graduatedData" @selection-change="handleSelectionChange">
+              <!-- 研究生 -->
+              <el-tab-pane label="研究生">
+                <el-table ref="graduateStudentTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="graduateStudentData" @selection-change="handleSelectionChange">
                   <el-table-column type="selection" width="55"></el-table-column>
                   <el-table-column prop="name" label="姓名" width="120"></el-table-column>
                   <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
                 </el-table>
               </el-tab-pane>
-              <!-- 客人 -->
-              <el-tab-pane label="客人">
-                <el-table ref="guestTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
-                  :data="guestData" @selection-change="handleSelectionChange">
+
+              <!-- 本科生 -->
+              <el-tab-pane label="本科生">
+                <el-table ref="undergraduateStudentTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="undergraduateStudentData" @selection-change="handleSelectionChange">
                   <el-table-column type="selection" width="55"></el-table-column>
                   <el-table-column prop="name" label="姓名" width="120"></el-table-column>
                   <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
                 </el-table>
               </el-tab-pane>
+
+
+              <!-- 特邀 -->
+              <el-tab-pane label="特邀">
+                <el-table ref="specialInvitedTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="specialInvitedData" @selection-change="handleSelectionChange">
+                  <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                  <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
+                </el-table>
+              </el-tab-pane>
+
+              <!-- 其他 -->
+              <el-tab-pane label="其他">
+                <el-table ref="otherTable" :header-cell-style="{ background: '#004d8c', color: '#FFFFFF' }"
+                  :data="otherData" @selection-change="handleSelectionChange">
+                  <el-table-column type="selection" width="55"></el-table-column>
+                  <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                  <el-table-column prop="role" label="角色" show-overflow-tooltip></el-table-column>
+                </el-table>
+              </el-tab-pane>
+
             </el-tabs>
+
 
             <div style="margin-top: 20px">
               <el-button type="primary" @click="invite">邀请人员</el-button>
@@ -129,51 +154,64 @@ export default {
         role: '',
         email: '',
         remark: '',
+        pd:'123456'
       },
       options: [{
-        value: '学生',
-        label: '学生'
+        value: '研究生',
+        label: '研究生'
       }, {
-        value: '导师',
-        label: '导师'
+        value: '博士生',
+        label: '博士生'
       }, {
-        value: '客人',
-        label: '客人'
+        value: '本科生',
+        label: '本科生'
+      }, {
+        value: '教师',
+        label: '教师'
+      }, {
+        value: '特邀',
+        label: '特邀'
+      }, {
+        value: '其他',
+        label: '其他'
       }],
       loading: false,
     };
   },
   computed: {
-    tutorData() {
-      return this.inviteData.filter(item => item.role === '导师');
+    graduateStudentData() {
+      return this.inviteData.filter(item => item.role === '研究生');
     },
-    studentData() {
-      return this.inviteData.filter(item => item.role === '学生');
+    phdStudentData() {
+      return this.inviteData.filter(item => item.role === '博士生');
     },
-    graduatedData(){
-      return this.inviteData.filter(item => item.role === '毕业学生');
+    undergraduateStudentData() {
+      return this.inviteData.filter(item => item.role === '本科生');
     },
-    guestData() {
-      return this.inviteData.filter(item => item.role === '客人');
-    }
+    teacherData() {
+      return this.inviteData.filter(item => item.role === '教师');
+    },
+    specialInvitedData() {
+      return this.inviteData.filter(item => item.role === '特邀');
+    },
+    otherData() {
+      return this.inviteData.filter(item => item.role === '其他');
+    },
   },
+
   created() {
     this.getpatiData();
   },
   methods: {
-    cancleCreate(){
-      console.log(this.form)
+    cancleCreate() {
+
     },
     // 获取人员信息
     getpatiData() {
       // const path = 'http://127.0.0.1:5000/getPati';
       const path = '/api/getPati';
       axios.post(path).then(res => {
-        // var msg = res.data.id;
-        // this.new_time_data.push(msg);
-        // this.data_list = res.data.reslist;
-        // console.log(this.data_list);
-        console.log(res);
+
         this.inviteData = res.data.reslist
       }).catch(error => {
         console.error(error);
@@ -181,18 +219,21 @@ export default {
     },
     invite() {
       this.loading = true;
-      console.log(this.multipleSelection)
       const path = '/api/invitePati';
       axios.post(path, { pati: this.multipleSelection }).then(res => {
-        console.log(res);
+
         this.loading = false;
+        this.$message({
+          message: '邀请邮件发送成功！',
+          type: 'success'
+        });
       }).catch(error => {
         console.error(error);
+        this.$message.error('邀请邮件发送成功！');
       });
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log(this.multipleSelection)
     },
     // Assuming you have a method for this based on your template
     getAllKb() {
@@ -204,13 +245,14 @@ export default {
 
       // 清空选中状态数组
       this.multipleSelection = [];
-
       // 清空表中的选中状态
-      if (this.$refs.allTable) this.$refs.allTable.clearSelection();
-      if (this.$refs.tutorTable) this.$refs.tutorTable.clearSelection();
-      if (this.$refs.studentTable) this.$refs.studentTable.clearSelection();
-      if (this.$refs.graduatedTable) this.$refs.graduatedTable.clearSelection();
-      if (this.$refs.guestTable) this.$refs.guestTable.clearSelection();
+      if (this.$refs.graduateStudentTable) this.$refs.graduateStudentTable.clearSelection();
+      if (this.$refs.phdStudentTable) this.$refs.phdStudentTable.clearSelection();
+      if (this.$refs.undergraduateStudentTable) this.$refs.undergraduateStudentTable.clearSelection();
+      if (this.$refs.teacherTable) this.$refs.teacherTable.clearSelection();
+      if (this.$refs.specialInvitedTable) this.$refs.specialInvitedTable.clearSelection();
+      if (this.$refs.otherTable) this.$refs.otherTable.clearSelection();
+
     },
     clickDanger() {
       console.log('这里是danger回调')
@@ -233,7 +275,7 @@ export default {
       // })
     },
     newpati() {
-      console.log(this.name)
+
       if (this.form.name == "") {
         console.log("创建人员失败")
         this.falsemeeting = true;
@@ -241,8 +283,8 @@ export default {
         console.log("新建人员");
         // 设置对应python的接口，这里使用的是localhost:5000
         const path = '/api/newpati';
-        axios.post(path, { name: this.form.name, role: this.form.role, email: this.form.email, remark: this.form.remark }).then(res => {
-          console.log(res);
+        axios.post(path, { name: this.form.name, role: this.form.role, email: this.form.email, remark: this.form.remark , pd: this.form.pd}).then(res => {
+
           this.sendVal = true;
         }).catch(error => {
           this.falsemeeting = true;

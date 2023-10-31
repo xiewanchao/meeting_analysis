@@ -1,29 +1,76 @@
 <template>
   <div class="accessRecord-wrapper">
-    <div class="accessRecord-title">
-      <div class="inputs">
-        <el-input placeholder="当前会议" v-model="curmeeting" disabled>
-          <template slot="prepend">当前会议</template>
-        </el-input>
-        <el-input placeholder="会议时间" v-model="meetingtime" disabled>
-          <template slot="prepend">会议时间</template>
-        </el-input>
+    <div>
+      <div class="ti">
+        新增议程
       </div>
-    </div>
-    <div class="MeetingInfo">
-      <el-input placeholder="请输入您分享的内容" v-model="context" class="context">
-        <template slot="prepend">分享内容</template>
-      </el-input>
-      <el-input placeholder="请输入您预估分享时长" v-model="time" class="time">
-        <template slot="prepend">分享时长（分钟）</template>
-      </el-input>
+
+      <el-card class="box-card">
+        <el-card style="margin-bottom: 10px;">
+          <el-descriptions title="会议信息">
+            <el-descriptions-item label="当前会议">{{ curmeeting }}</el-descriptions-item>
+            <el-descriptions-item label="会议时间">{{ meetingtime }}</el-descriptions-item>
+            <el-descriptions-item label="会议主持人">{{ meeting.hoster }}</el-descriptions-item>
+            <el-descriptions-item label="会议号">{{ meeting.number }}</el-descriptions-item>
+            <el-descriptions-item label="会议链接"><a :href="meeting.link">{{ meeting.link }}</a></el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+
+        <div style="margin-right: 40%; margin-top: 3%;">
+          <el-form ref="form" :model="form" label-width="80px">
+
+            <el-form-item label="分享主题">
+              <el-input v-model="form.topicName" style="width: 40%" clearable></el-input>
+            </el-form-item>
+
+            <el-form-item label="分享时长">
+              <el-select v-model="form.time" placeholder="请选择时长">
+                <el-option label="10min" value="10min"></el-option>
+                <el-option label="15min" value="15min"></el-option>
+                <el-option label="20min" value="20min"></el-option>
+                <el-option label="30min" value="30min"></el-option>
+                <el-option label="45min" value="45min"></el-option>
+                <el-option label="60min" value="60min"></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="参加形式">
+              <el-radio-group v-model="form.participation_mode">
+                <el-radio label="线下参加"></el-radio>
+                <el-radio label="线上参加"></el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item label="课题">
+              <el-select v-model="form.project" placeholder="请选择课题">
+                <el-option label="数字助教" value="数字助教"></el-option>
+                <el-option label="研讨会助" value="研讨会助"></el-option>
+                <el-option label="交易欺诈" value="交易欺诈"></el-option>
+                <el-option label="其他" value="其他"></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="分享内容">
+              <el-checkbox-group v-model="form.checkbox" @change="checkboxchange">
+                <el-checkbox label="实验分析" name="type"></el-checkbox>
+                <el-checkbox label="算法模型" name="type"></el-checkbox>
+                <el-checkbox label="论文进展" name="type"></el-checkbox>
+                <el-checkbox label="下周计划" name="type"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="primary" @click="onSubmit">立即创建</el-button>
+              <el-button>取消</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-card>
+
     </div>
 
-    <div class="buttonnew">
-      <el-button @click="newProcess">
-        添加议程
-      </el-button>
-    </div>
+
+
     <dialog-bar v-model="sendVal" type="confirm" :title=user content="议程创建成功" v-on:cancel="clickCancel()"></dialog-bar>
     <dialog-bar v-model="falsemeeting" type="confirm" :title=user content="分享不得为空，议程创建失败"
       v-on:cancel="clickCancel()"></dialog-bar>
@@ -44,47 +91,74 @@ export default {
       falsemeeting: false,
       falsemeeting2: false,
       sendVal: false,
+      meeting: [],
       curmeeting: "",
       meetingtime: "",
       context: "",
       time: "",
-      user: null,
+      user: '',
       hoster: '',
-      role: "参与者",
+      role: "",
       people: "",
+      form: {
+        curmeeting: '',
+        topicName: '',
+        time: "15min",
+        people: '',
+        role: '',
+        meetingid:'',
+        participation: '',
+        participation_mode: "线下参加",
+        project: '',
+        experiment: '',
+        algorithm: '',
+        paper: '',
+        nextweekplan: '',
+        completion: '',
+        checkbox: []
+      }
     };
   },
   mounted() {
-    let userInfo = sessionStorage.getItem("userInfo");
-    let meetingInfo = sessionStorage.getItem("meetingInfo");
-
-    if (userInfo) {
-      this.user = JSON.parse(userInfo).admin;
-      console.log(this.user); // 这将打印出 userName 的值
-    }
-    if (meetingInfo) {
-      this.hoster = JSON.parse(meetingInfo).hoster;
-      console.log(this.user); // 这将打印出 hoster 的值
-      if(this.hoster == this.user){
-        console.log("主持人")
-        this.role = '主持人'
-      }else{
-        this.role = '参与者'
-      }
-    }
   },
 
   created() {
     this.getMeetingData();
-
+    let userInfo = sessionStorage.getItem("userInfo");
+    if (userInfo) {
+      this.form.people = JSON.parse(userInfo).admin;
+      this.form.topicName = this.form.people + "的会议分享"
+      this.form.role = JSON.parse(userInfo).role
+    }
   },
   methods: {
+    checkboxchange() {
+
+    },
+    onSubmit() {
+      if (this.form.checkbox.includes("实验分析")) {
+        this.form.experiment = "实验分析";
+      }
+      if (this.form.checkbox.includes("算法模型")) {
+        this.form.algorithm = "算法模型";
+      }
+      if (this.form.checkbox.includes("论文进展")) {
+        this.form.paper = "论文进展";
+      }
+      if (this.form.checkbox.includes("下周计划")) {
+        this.form.nextweekplan = "下周计划";
+      }
+
+      this.newProcess()
+    },
     getMeetingData() {
       const path = '/api/getCurrentmeeting';
       axios.post(path, { aaa: "hhhhhhh" }).then(res => {
         this.meeting = res.data.reslist[0];
         this.meetingtime = this.meeting.date;
         this.curmeeting = this.meeting.theme;
+        this.form.curmeeting = this.meeting.theme;
+        this.form.meetingid = this.meeting.id;
       }).catch(error => {
         console.error(error);
       });
@@ -99,32 +173,48 @@ export default {
       console.log('点击了confirm');
     },
     newProcess() {
-      console.log(this.curmeeting)
-      console.log(this.context)
-      console.log(this.time)
-      if (this.context == "") {
-        console.log("创建会议失败")
-        this.falsemeeting = true;
-      } else {
-        console.log("新建议程");
-        // 设置对应python的接口，这里使用的是localhost:5000
-        const path = '/api/newProcess';
-        axios.post(path, { curmeeting: this.curmeeting, topicName: this.context, time: this.time, people: this.user, role: this.role }).then(res => {
-          console.log(res);
+      const path = '/api/newProcess';
+      axios.post(path, { form: this.form })
+        .then(res => {
+
           this.sendVal = true;
         }).catch(error => {
           console.error(error);
           this.falsemeeting2 = true;
         });
-
-      }
-
     },
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.thismeeting {
+
+  margin: 1%;
+  width: 280px;
+}
+
+.el-table {
+  margin-bottom: 3%;
+}
+
+.ti {
+  margin-left: 1%;
+  margin-top: 1%;
+  color: #1a1a1a;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 34px;
+}
+
+
+.box-card {
+  margin-left: 1%;
+  margin-right: 3%;
+  margin-top: 1%;
+  border-radius: 8px;
+}
+
 .newpati {
   margin-top: 35px;
   color: blue;
@@ -349,4 +439,5 @@ export default {
       }
     }
   }
-}</style>
+}
+</style>

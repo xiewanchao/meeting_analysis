@@ -4,40 +4,138 @@
       当前会议流程
     </div>
     <el-card class="box-card">
-      <el-input class="thismeeting" placeholder="当前会议" v-model="curmeeting" disabled>
-        <template slot="prepend">当前会议</template>
-      </el-input>
-      <el-input class="thismeeting" placeholder="会议时间" v-model="meetingtime" disabled>
-        <template slot="prepend">会议时间</template>
-      </el-input>
-      <el-table :data="topicData" stripe class="accessRecord-table">
-        <el-table-column prop="time" label="时长"></el-table-column>
-        <el-table-column prop="topicName" label="分享主题"></el-table-column>
-        <el-table-column prop="people" label="主讲人"></el-table-column>
-        <el-table-column prop="role" label="角色"></el-table-column>
-      </el-table>
-      <el-button type="primary" @click="dialogVisible = true">增加议程</el-button>
+      <el-card style="margin-bottom: 10px;">
+        <el-descriptions title="会议信息">
+          <el-descriptions-item label="当前会议">{{ curmeeting }}</el-descriptions-item>
+          <el-descriptions-item label="会议时间">{{ meetingtime }}</el-descriptions-item>
+          <el-descriptions-item label="会议主持人">{{ meeting.hoster }}</el-descriptions-item>
+          <el-descriptions-item label="会议号">{{ meeting.number }}</el-descriptions-item>
+          <el-descriptions-item label="会议链接"><a :href="meeting.link">{{ meeting.link }}</a></el-descriptions-item>
+        </el-descriptions>
+        <el-button type="primary" @click="addProcess">增加议程</el-button>
+      </el-card>
+
+      <el-card style="margin-bottom: 10px;">
+        <div class="card-ti">
+          线下参会人员
+        </div>
+        <el-table :data="offlineParticipation" stripe class="accessRecord-table">
+          <el-table-column prop="time" label="时长"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题"></el-table-column>
+          <el-table-column prop="people" label="主讲人"></el-table-column>
+          <el-table-column prop="role" label="角色"></el-table-column>
+          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="experiment" label="实验分析" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.experiment)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="algorithm" label="算法模型" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.algorithm)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="paper" label="论文进展" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.paper)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="nextweekplan" label="下周计划" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.nextweekplan)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
+        </el-table>
+      </el-card>
+
+      <el-card style="margin-bottom: 10px;">
+        <div class="card-ti">
+          线上参会人员
+        </div>
+        <el-table :data="onlineParticipation" stripe class="accessRecord-table">
+          <el-table-column prop="time" label="时长"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题"></el-table-column>
+          <el-table-column prop="people" label="主讲人"></el-table-column>
+          <el-table-column prop="role" label="角色"></el-table-column>
+          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="experiment" label="实验分析" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.experiment)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="algorithm" label="算法模型" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.algorithm)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="paper" label="论文进展" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.paper)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="nextweekplan" label="下周计划" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.nextweekplan)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
+        </el-table>
+      </el-card>
+
+      <el-card style="margin-bottom: 10px;">
+        <div class="card-ti">
+          未参会人员
+        </div>
+        <el-table :data="unParticipation" stripe class="accessRecord-table">
+          <el-table-column prop="time" label="时长"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题"></el-table-column>
+          <el-table-column prop="people" label="主讲人"></el-table-column>
+          <el-table-column prop="role" label="角色"></el-table-column>
+          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="experiment" label="实验分析" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.experiment)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="algorithm" label="算法模型" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.algorithm)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="paper" label="论文进展" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.paper)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="nextweekplan" label="下周计划" align="center">
+            <template v-slot="scope">
+              <i :class="getIconClass(scope.row.nextweekplan)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
+        </el-table>
+      </el-card>
+
     </el-card>
 
-    <el-dialog title="增加议程" :visible.sync="dialogVisible" width="30%" @close="closedialog">
-      <newProcess></newProcess>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-import newProcess from './newProcess.vue';
 export default {
-  components: {
-    newProcess // 注册导入的组件
-  },
   data() {
     return {
+      meeting: [],
       curmeeting: "",
       meetingtime: "",
       topicData: [],
       dialogVisible: false,
+      onlineParticipation: [],
+      offlineParticipation: [],
+      unParticipation: [],
+      timer: null
     };
   },
   created() {
@@ -49,7 +147,20 @@ export default {
         console.error(error);
       });
   },
+  mounted() {
+    this.timer = setInterval(this.getMeetingProcessData, 5 * 1000); // 5分钟
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+  },
   methods: {
+    getIconClass(value) {
+      if (value === null || value === undefined || value === '') {
+        return "el-icon-close";
+      } else {
+        return "el-icon-check";
+      }
+    },
     closedialog() {
       this.getMeetingProcessData()
     },
@@ -58,12 +169,12 @@ export default {
       return axios.post(path, { aaa: "hhhhhhh" })
         .then(res => {
           this.meeting = res.data.reslist[0];
-          this.meetingtime = this.meeting.date.split(" ")[0];
+          this.meetingtime = this.meeting.date;
           this.curmeeting = this.meeting.theme;
-          console.log(res);
           sessionStorage.setItem(
             "meetingInfo",
             JSON.stringify({
+              id: this.meeting.id,
               theme: this.meeting.theme,
               hoster: this.meeting.host,
               selectDay: this.meeting.selectDay,
@@ -75,10 +186,11 @@ export default {
     },
     getMeetingProcessData() {
       const path = '/api/getMeetingProcessData';
-      return axios.post(path, { curmeeting: this.curmeeting })
+      return axios.post(path, { meetingid: this.meeting.id })
         .then(res => {
           this.topicData = res.data.reslist;
-          console.log(res);
+          this.onlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线上参加');
+          this.offlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线下参加');
         });
 
     },
@@ -90,6 +202,13 @@ export default {
 </script>
 
 <style scoped>
+.card-ti {
+  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 34px;
+}
+
 .thismeeting {
 
   margin: 1%;

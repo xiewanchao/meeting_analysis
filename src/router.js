@@ -10,13 +10,13 @@ const router = new Router({
       name: 'index',
       meta: { title: '首页', requireLogin: true },
       component: () => import('./pages/index.vue'),
-      redirect: '/login',
+      redirect: '/MeetingProcess',
       children: [
         {
-            path: '/MeetingInfo',
-            name: 'MeetingInfo',
-            meta: { title: '当前会议简介', requireLogin: true },
-            component: () => import('cmpt/visitorManage/meetinginfocolor.vue')
+          path: '/MeetingInfo',
+          name: 'MeetingInfo',
+          meta: { title: '当前会议简介', requireLogin: true },
+          component: () => import('cmpt/visitorManage/meetinginfocolor.vue')
         },
         {
           path: '/MeetingProcess',
@@ -48,7 +48,7 @@ const router = new Router({
           name: 'currenttv',
           meta: { title: '会议视频', requireLogin: true },
           component: () =>
-              import('cmpt/statisticalAnalysis/currenttv.vue')
+            import('cmpt/statisticalAnalysis/currenttv.vue')
         },
         {
           path: '/councilRoomAnalysis',
@@ -78,18 +78,18 @@ const router = new Router({
           meta: { title: '系统日志', requireLogin: true },
           component: () => import('cmpt/systemSetting/systemLog.vue')
         },
-          {
-              path: '/listoryMeeting',
-              name: 'listoryMeeting',
-              meta: { title: '会情回顾', requireLogin: true },
-              component: () => import('cmpt/visitorManage/listorymeeting.vue')
-          },
+        {
+          path: '/listoryMeeting',
+          name: 'listoryMeeting',
+          meta: { title: '会情回顾', requireLogin: true },
+          component: () => import('cmpt/visitorManage/listorymeeting.vue')
+        },
         {
           path: '/ParticipantInvite',
           name: 'ParticipantInvite',
           meta: { title: '会议新建', requireLogin: true },
           component: () => import('cmpt/visitorManage/patiinvite.vue')
-        },{
+        }, {
           path: '/aftermeeting',
           name: 'aftermeeting',
           meta: { title: '会后纪要分析' },

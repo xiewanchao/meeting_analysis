@@ -29,9 +29,12 @@ https://meeting.tencent.com/dm/xxxxxxxx
           <el-input v-model="form.host"></el-input>
         </el-form-item>
         <el-form-item label="会议时间*">
-          <el-date-picker v-model="form.selectDay" type="date" class="date" placeholder="选择会议时间"
-            value-format="yyyy-MM-dd">
+          <el-date-picker class="date" v-model="form.selectDay" type="datetime" placeholder="选择会议时间"
+            default-time="18:30:00">
           </el-date-picker>
+          <!-- <el-date-picker v-model="form.selectDay" type="date" class="date" placeholder="选择会议时间"
+            value-format="yyyy-MM-dd">
+          </el-date-picker> -->
         </el-form-item>
         <el-form-item label="会议邀请链接*">
           <el-input v-model="form.link"></el-input>
@@ -45,74 +48,6 @@ https://meeting.tencent.com/dm/xxxxxxxx
         </el-form-item>
       </el-form>
       <div class="CreateMeeting">
-        <!-- <div class="tableTitle"><span class="midText">会议基本信息</span></div>
-        <div class="MeetingInfo">
-          <el-input placeholder="请输入会议主题" v-model="theme" class="theme">
-            <template slot="prepend">会议主题</template>
-          </el-input>
-          <el-input placeholder="请输入会议主持人" v-model="host" class="host">
-            <template slot="prepend">会议主持人</template>
-          </el-input>
-
-          <el-date-picker v-model="selectDay" type="date" class="date" placeholder="选择会议时间" value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </div>
-        <div class="tableTitle"><span class="midText">选择参会人员</span></div>
-
-        <div class="patichoose" v-for="(item, index) in data_list" :key="index">
-          <p class="text">{{ item.name }}</p>
-          <div class="slideTwo">
-            <input type="checkbox" class="check_box tui-checkbox" :id="'id' + item.id" :value="item.name"
-              v-model="checkedNames">
-            <label :for="'id' + item.id" class="title"></label>
-          </div>
-        </div>
-        <div class='newpati'>
-          <router-link to="newpati">
-            <span class='newpati'>添加新的参会者</span>
-          </router-link>
-        </div> -->
-        <!-- <div class="tableTitle1"><span class="midText">上传相关资料</span></div>
-    <div>
-      <el-form ref="addForm" :model="addForm" label-width="130px" label-position="left">
-        <el-form-item label="上传文件">
-          <el-input v-model="addForm.fileName" placeholder="请上传文件" style="width: 220px;" :disabled="true">
-          </el-input>
-
-          <el-upload
-                  style="width: 200px;display: inline;margin-left: 25px;"
-                  class="upload-demo"
-                  ref="upload"
-                  action=""
-                  :show-file-list="true"
-                  :before-upload="beforeUpload">
-            <el-button slot="trigger"  icon="el-icon-upload2">选取文件</el-button>
-            <el-button  @click="viewFile" icon="el-icon-view">预览</el-button>-->
-        <!-- </el-upload>
-        </el-form-item>
-      </el-form> -->
-        <!--<pdf-->
-        <!--:src="pdfUrl"-->
-        <!--:page="currentPage"-->
-        <!--@num-pages="pageCount=$event"-->
-        <!--@page-loaded="currentPage=$event"-->
-        <!--@loaded="loadPdfHandler">-->
-        <!--</pdf>-->
-
-
-        <!--<el-button type="primary" @click="changePdfPage(0)" icon="el-icon-back">上一页</el-button>-->
-        <!--<el-button type="primary">{{currentPage}} / {{pageCount}}</el-button>-->
-        <!--<el-button type="primary" @click="changePdfPage(1)" icon="el-icon-right">下一页</el-button>-->
-        <!--<el-button type="primary" @click="downloadFile()" icon="el-icon-download">下载</el-button>-->
-        <!-- </div> -->
-        <!--<div>-->
-        <!---->
-        <!--</div>-->
-        <!-- <div class="buttonnew">
-          <el-button @click="newmeeting">
-            新建会议
-          </el-button>
-        </div> -->
         <dialog-bar v-model="sendVal" type="confirm" :title=host content="会议创建成功"
           v-on:cancel="clickCancel()"></dialog-bar>
         <dialog-bar v-model="falsemeeting" type="confirm" :title=host content="主持人不得为空，会议创建失败"
@@ -190,8 +125,9 @@ export default {
       const host = hostMatch ? hostMatch[1] : '';
 
       // 使用正则表达式匹配会议时间
-      const timeMatch = this.textarea.match(/会议时间：(\d{4}\/\d{2}\/\d{2})/);
-      const time = timeMatch ? timeMatch[1] : '';
+      const timeMatch = this.textarea.match(/会议时间：(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})-\d{2}:\d{2}/);
+      const time = timeMatch ? `${timeMatch[1]} ${timeMatch[2]}:00` : '';
+
 
       // 使用正则表达式匹配会议邀请链接
       const linkMatch = this.textarea.match(/https:\/\/meeting\.tencent\.com\/\S+/);
