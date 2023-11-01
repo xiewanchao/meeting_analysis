@@ -38,7 +38,7 @@ export default {
   },
   mixins: [Fetch],
   created() {
-    this.$_fetch_account().then(res => console.table(res));
+    // this.$_fetch_account().then(res => console.table(res));
   },
   mounted() {
     window.addEventListener("enter", this.login);
@@ -85,7 +85,7 @@ export default {
             // 把你的登录逻辑放入这里
             if (this.st === "登录成功") {
               this.userName = userName,
-                this.getUserInfo()
+              this.getUserInfo()
               this.$router.push("/MeetingProcess");
             } else {
               this.$message({

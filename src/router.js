@@ -172,24 +172,24 @@ const router = new Router({
       component: () => import('cmpt/visitorManage/3dforcegraph.vue')
       // component: () => import('cmpt/visitorManage/bbb.vue')
     },
-    {
-      path: '/login',
-      name: 'login',
-      meta: { title: '登录' },
-      component: () => import('./pages/login.vue')
-      // component: () => import('cmpt/visitorManage/bbb.vue')
-    }
+    // {
+    //   path: '/login',
+    //   name: 'login',
+    //   meta: { title: '登录' },
+    //   component: () => import('./pages/login.vue')
+    //   // component: () => import('cmpt/visitorManage/bbb.vue')
+    // }
   ]
 });
 
-// router.beforeEach((to, name, next) => {
-//   const userInfo = sessionStorage.getItem('userInfo');
-//   if (userInfo !== null || !to.meta.requireLogin) {
-//     next();
-//   } else {
-//     next({ name: 'login', params: { path: '/login' } });
-//   }
-// });
+router.beforeEach((to, name, next) => {
+  const userInfo = sessionStorage.getItem('userInfo');
+  if (userInfo !== null || !to.meta.requireLogin) {
+    next();
+  } else {
+    next({ name: 'login', params: { path: '/login' } });
+  }
+});
 
 router.afterEach(route => {
   if (route.meta.title) {
