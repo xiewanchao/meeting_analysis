@@ -20,11 +20,11 @@
           线下参会人员
         </div>
         <el-table :data="offlineParticipation" stripe class="accessRecord-table">
-          <el-table-column prop="time" label="时长"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题"></el-table-column>
-          <el-table-column prop="people" label="主讲人"></el-table-column>
-          <el-table-column prop="role" label="角色"></el-table-column>
-          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="time" label="时长" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
+          <el-table-column prop="role" label="角色" align="center"></el-table-column>
+          <el-table-column prop="project" label="课题" align="center"></el-table-column>
           <el-table-column prop="experiment" label="实验分析" align="center">
             <template v-slot="scope">
               <i :class="getIconClass(scope.row.experiment)"></i>
@@ -54,11 +54,11 @@
           线上参会人员
         </div>
         <el-table :data="onlineParticipation" stripe class="accessRecord-table">
-          <el-table-column prop="time" label="时长"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题"></el-table-column>
-          <el-table-column prop="people" label="主讲人"></el-table-column>
-          <el-table-column prop="role" label="角色"></el-table-column>
-          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="time" label="时长" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
+          <el-table-column prop="role" label="角色" align="center"></el-table-column>
+          <el-table-column prop="project" label="课题" align="center"></el-table-column>
           <el-table-column prop="experiment" label="实验分析" align="center">
             <template v-slot="scope">
               <i :class="getIconClass(scope.row.experiment)"></i>
@@ -88,11 +88,11 @@
           未参会人员
         </div>
         <el-table :data="unParticipation" stripe class="accessRecord-table">
-          <el-table-column prop="time" label="时长"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题"></el-table-column>
-          <el-table-column prop="people" label="主讲人"></el-table-column>
-          <el-table-column prop="role" label="角色"></el-table-column>
-          <el-table-column prop="project" label="课题"></el-table-column>
+          <el-table-column prop="time" label="时长" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
+          <el-table-column prop="role" label="角色" align="center"></el-table-column>
+          <el-table-column prop="project" label="课题" align="center"></el-table-column>
           <el-table-column prop="experiment" label="实验分析" align="center">
             <template v-slot="scope">
               <i :class="getIconClass(scope.row.experiment)"></i>

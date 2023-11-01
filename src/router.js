@@ -182,9 +182,9 @@ const router = new Router({
   ]
 });
 
-router.beforeEach((to, name, next) => {
+router.beforeEach((to, from, next) => {
   const userInfo = sessionStorage.getItem('userInfo');
-  if (userInfo !== null || !to.meta.requireLogin) {
+  if (userInfo !== null || !to.meta.requireLogin || to.path === '/login') {
     next();
   } else {
     next({ name: 'login', params: { path: '/login' } });
