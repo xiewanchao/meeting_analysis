@@ -6,9 +6,9 @@
     <el-card class="box-card">
       <el-card style="margin-bottom: 10px;">
         <el-descriptions title="会议信息">
-          <el-descriptions-item label="当前会议">{{ curmeeting }}</el-descriptions-item>
-          <el-descriptions-item label="会议时间">{{ meetingtime }}</el-descriptions-item>
-          <el-descriptions-item label="会议主持人">{{ meeting.hoster }}</el-descriptions-item>
+          <el-descriptions-item label="当前会议">{{ meeting.Theme }}</el-descriptions-item>
+          <el-descriptions-item label="会议时间">{{ meeting.Date }}</el-descriptions-item>
+          <el-descriptions-item label="会议主持人">{{ meeting.Hoster }}</el-descriptions-item>
           <el-descriptions-item label="会议号">{{ meeting.number }}</el-descriptions-item>
           <el-descriptions-item label="会议链接"><a :href="meeting.link">{{ meeting.link }}</a></el-descriptions-item>
         </el-descriptions>
@@ -21,7 +21,7 @@
         </div>
         <el-table :data="offlineParticipation" stripe class="accessRecord-table">
           <el-table-column prop="time" label="时长" align="center"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center" width="180px"></el-table-column>
           <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
           <el-table-column prop="role" label="角色" align="center"></el-table-column>
           <el-table-column prop="project" label="课题" align="center"></el-table-column>
@@ -46,6 +46,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
+
+          <el-table-column fixed="right" label="操作" align="center">
+            <template slot-scope="scope">
+              <el-button @click="delofflinerow(scope.row)" type="text" size="small">删除议程</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
 
@@ -55,7 +61,7 @@
         </div>
         <el-table :data="onlineParticipation" stripe class="accessRecord-table">
           <el-table-column prop="time" label="时长" align="center"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center" width="180px"></el-table-column>
           <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
           <el-table-column prop="role" label="角色" align="center"></el-table-column>
           <el-table-column prop="project" label="课题" align="center"></el-table-column>
@@ -80,6 +86,13 @@
             </template>
           </el-table-column>
           <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
+
+
+          <el-table-column fixed="right" label="操作" align="center">
+            <template slot-scope="scope">
+              <el-button @click="delonlinerow(scope.row)" type="text" size="small">删除议程</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
 
@@ -89,7 +102,7 @@
         </div>
         <el-table :data="unParticipation" stripe class="accessRecord-table">
           <el-table-column prop="time" label="时长" align="center"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题" align="center"></el-table-column>
+          <el-table-column prop="topicName" label="分享主题" align="center" width="180px"></el-table-column>
           <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
           <el-table-column prop="role" label="角色" align="center"></el-table-column>
           <el-table-column prop="project" label="课题" align="center"></el-table-column>
@@ -154,6 +167,67 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
+    delonlinerow(row) {
+      this.$confirm('确认删除这条议程吗？', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 如果确认了删除，执行删除逻辑
+        // 假设有一个名为 agendaList 的数组存储了所有议程
+        const index = this.onlineParticipation.indexOf(row);
+        if (index !== -1) {
+          this.onlineParticipation.splice(index, 1);
+          console.log(row);
+          const path = '/api/delProcess';
+          return axios.post(path, { id: row.id })
+            .then(res => {
+              this.$message({
+                // 提示删除成功
+                type: 'success',
+                message: '删除成功!'
+              });
+            });
+
+        }
+      }).catch(() => {
+        // 如果取消了删除操作，可以不做任何事情或者显示提示
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    delofflinerow(row) {
+      this.$confirm('确认删除这条议程吗？', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 如果确认了删除，执行删除逻辑
+        // 假设有一个名为 agendaList 的数组存储了所有议程
+        const index = this.offlineParticipation.indexOf(row);
+        if (index !== -1) {
+          this.offlineParticipation.splice(index, 1);
+          console.log(row);
+          const path = '/api/delProcess';
+          return axios.post(path, { id: row.id })
+            .then(res => {
+              this.$message({
+                // 提示删除成功
+                type: 'success',
+                message: '删除成功!'
+              });
+            });
+        }
+      }).catch(() => {
+        // 如果取消了删除操作，可以不做任何事情或者显示提示
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
     getIconClass(value) {
       if (value === null || value === undefined || value === '') {
         return "el-icon-close";
@@ -163,23 +237,26 @@ export default {
     },
     closedialog() {
       this.getMeetingProcessData()
+
     },
     getMeetingData() {
       const path = '/api/getCurrentmeeting';
       return axios.post(path, { aaa: "hhhhhhh" })
         .then(res => {
           this.meeting = res.data.reslist[0];
-          this.meetingtime = this.meeting.date;
-          this.curmeeting = this.meeting.theme;
+          console.log(this.meeting),
+            this.meetingtime = this.meeting.Date;
+          this.curmeeting = this.meeting.curmeeting;
           sessionStorage.setItem(
             "meetingInfo",
             JSON.stringify({
               id: this.meeting.id,
-              theme: this.meeting.theme,
+              theme: this.meeting.curmeeting,
               hoster: this.meeting.host,
               selectDay: this.meeting.selectDay,
               link: this.meeting.link,
-              number: this.meeting.number
+              number: this.meeting.number,
+              time: this.meeting.time,
             })
           );
         });

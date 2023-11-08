@@ -157,8 +157,6 @@ export default {
         // var msg = res.data.id;
         // this.new_time_data.push(msg);
         this.data_list = res.data.reslist;
-        console.log(this.data_list);
-        console.log(res);
       }).catch(error => {
         console.error(error);
       });

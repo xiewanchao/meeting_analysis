@@ -8,9 +8,9 @@
       <el-card class="box-card">
         <el-card style="margin-bottom: 10px;">
           <el-descriptions title="会议信息">
-            <el-descriptions-item label="当前会议">{{ curmeeting }}</el-descriptions-item>
-            <el-descriptions-item label="会议时间">{{ meetingtime }}</el-descriptions-item>
-            <el-descriptions-item label="会议主持人">{{ meeting.hoster }}</el-descriptions-item>
+            <el-descriptions-item label="当前会议">{{ meeting.Theme }}</el-descriptions-item>
+            <el-descriptions-item label="会议时间">{{ meeting.Date }}</el-descriptions-item>
+            <el-descriptions-item label="会议主持人">{{ meeting.Hoster }}</el-descriptions-item>
             <el-descriptions-item label="会议号">{{ meeting.number }}</el-descriptions-item>
             <el-descriptions-item label="会议链接"><a :href="meeting.link">{{ meeting.link }}</a></el-descriptions-item>
           </el-descriptions>
@@ -155,10 +155,11 @@ export default {
       const path = '/api/getCurrentmeeting';
       axios.post(path, { aaa: "hhhhhhh" }).then(res => {
         this.meeting = res.data.reslist[0];
-        this.meetingtime = this.meeting.date;
-        this.curmeeting = this.meeting.theme;
-        this.form.curmeeting = this.meeting.theme;
+        this.meetingtime = this.meeting.Date;
+        this.curmeeting = this.meeting.Theme;
+        this.form.curmeeting = this.meeting.Theme;
         this.form.meetingid = this.meeting.id;
+        console.log(this.meeting)
       }).catch(error => {
         console.error(error);
       });
