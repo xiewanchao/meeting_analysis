@@ -220,8 +220,9 @@ export default {
     invite() {
       this.loading = true;
       const path = '/api/invitePati';
+      console.log(this.multipleSelection)
       axios.post(path, { pati: this.multipleSelection }).then(res => {
-
+        
         this.loading = false;
         this.$message({
           message: '邀请邮件发送成功！',
@@ -229,7 +230,7 @@ export default {
         });
       }).catch(error => {
         console.error(error);
-        this.$message.error('邀请邮件发送成功！');
+        this.$message.error('发送失败，请刷新后重试！');
       });
     },
     handleSelectionChange(val) {
