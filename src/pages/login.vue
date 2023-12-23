@@ -64,9 +64,12 @@ export default {
               stuid: this.userInfo.stuid,
               ispermanent: this.userInfo.ispermanent,
               email: this.userInfo.email,
-              pd: this.userInfo.pd
+              pd: this.userInfo.pd,
+              remark: this.userInfo.remark
             })
+            
           );
+          this.$router.push("/MyState");
         })
         .catch(error => {
           console.error(error);
@@ -86,7 +89,7 @@ export default {
             if (this.st === "登录成功") {
               this.userName = userName,
               this.getUserInfo()
-              this.$router.push("/MeetingProcess");
+              // this.$router.push("/MyState");
             } else {
               this.$message({
                 message: this.st,

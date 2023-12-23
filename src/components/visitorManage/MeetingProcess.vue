@@ -101,32 +101,8 @@
           未参会人员
         </div>
         <el-table :data="unParticipation" stripe class="accessRecord-table">
-          <el-table-column prop="time" label="时长" align="center"></el-table-column>
-          <el-table-column prop="topicName" label="分享主题" align="center" width="180px"></el-table-column>
-          <el-table-column prop="people" label="主讲人" align="center"></el-table-column>
+          <el-table-column prop="people" label="姓名" align="center"></el-table-column>
           <el-table-column prop="role" label="角色" align="center"></el-table-column>
-          <el-table-column prop="project" label="课题" align="center"></el-table-column>
-          <el-table-column prop="experiment" label="实验分析" align="center">
-            <template v-slot="scope">
-              <i :class="getIconClass(scope.row.experiment)"></i>
-            </template>
-          </el-table-column>
-          <el-table-column prop="algorithm" label="算法模型" align="center">
-            <template v-slot="scope">
-              <i :class="getIconClass(scope.row.algorithm)"></i>
-            </template>
-          </el-table-column>
-          <el-table-column prop="paper" label="论文进展" align="center">
-            <template v-slot="scope">
-              <i :class="getIconClass(scope.row.paper)"></i>
-            </template>
-          </el-table-column>
-          <el-table-column prop="nextweekplan" label="下周计划" align="center">
-            <template v-slot="scope">
-              <i :class="getIconClass(scope.row.nextweekplan)"></i>
-            </template>
-          </el-table-column>
-          <el-table-column prop="completion" label="是否完成" align="center"></el-table-column>
         </el-table>
       </el-card>
 
@@ -266,8 +242,21 @@ export default {
       return axios.post(path, { meetingid: this.meeting.id })
         .then(res => {
           this.topicData = res.data.reslist;
+          // 首先筛选出所有参与方式为'refuse'的数据
+          this.unParticipation = this.topicData.filter(topic => topic.participation?.trim().toLowerCase() === 'refuse');
+
+          // 然后从原始数据中移除已经筛选出的数据
+          this.topicData = this.topicData.filter(topic => topic.participation?.trim().toLowerCase() !== 'refuse');
+
+          // 接下来筛选出线上参加的数据
           this.onlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线上参加');
+
+          // 最后筛选出线下参加的数据
           this.offlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线下参加');
+
+          // this.onlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线上参加');
+          // this.offlineParticipation = this.topicData.filter(topic => topic.participation_mode?.trim().toLowerCase() === '线下参加');
+          // this.unParticipation = this.topicData.filter(topic => topic.participation?.trim().toLowerCase() === 'refuse');
         });
 
     },

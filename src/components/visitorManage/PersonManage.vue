@@ -1,72 +1,91 @@
 <template>
   <div class="CreateMeeting">
     <div class="ti">
-      用户指南
+      人员管理
     </div>
     <el-card class="box-card">
-      <el-card class="invi-card">
-        <!-- your content here -->
-        <div class="card-ti">
-          主持人操作
-        </div>
-        <el-timeline>
-          <el-timeline-item placement="top" v-for="(activity, index) in hostProcess" :key="index">
-            <el-card style="height: 100px;">
-              <h4 style="margin: 0px; padding: 0px;">{{ activity.content }}</h4>
-              <el-link type="primary" @click="goToRoute(activity.router)">跳转页面：{{ activity.router }}</el-link>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
-      </el-card>
-      <el-card class="invi-card">
-        <!-- your content here -->
-        <div class="card-ti">
-          会议成员操作
-        </div>
-        <el-timeline>
-          <el-timeline-item placement="top" v-for="(activity, index) in memberProcess" :key="index">
-            <el-card style="height: 100px;">
-              <h4 style="margin: 0px; padding: 0px;">{{ activity.content }}</h4>
-              <el-link type="primary" @click="goToRoute(activity.router)">跳转页面：{{ activity.router }}</el-link>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
-      </el-card>
+      <el-row :gutter="20">
+
+        <el-col :span="12">
+          <el-card class="invi-card">
+            <!-- your content here -->
+            <div class="card-ti">
+              新建人员
+            </div>
+            <el-form ref="form" :model="form" label-width="120px">
+              <el-form-item label="姓名*">
+                <el-input v-model="form.name"></el-input>
+              </el-form-item>
+              <el-form-item label="密码*">
+                <el-input v-model="form.pd" show-password></el-input>
+              </el-form-item>
+              <el-form-item label="角色*">
+                <el-select v-model="form.role" placeholder="请选择">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="邮箱*">
+                <el-input v-model="form.email"></el-input>
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="form.remark"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="newpati">确认创建</el-button>
+                <el-button @click="cancleCreate">清除</el-button>
+              </el-form-item>
+            </el-form>
+          </el-card>
+        </el-col>
+
+      </el-row>
+
 
 
     </el-card>
+    <dialog-bar v-model="sendVal" type="confirm" content="参会人员创建成功" v-on:confirm="clickConfirm()"></dialog-bar>
+    <dialog-bar v-model="falsemeeting" type="confirm" content="参会人员创建失败" v-on:cancel="clickConfirm1()"></dialog-bar>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import dialogBar from '@/components/common/dialog.vue'
 export default {
+  components: {
+    'dialog-bar': dialogBar,
+  },
   data() {
     return {
-      reverse: true,
-      hostProcess: [{
-        content: '（可选）腾讯会议官网进行会议预约',
-        router: 'ParticipantInvite'
+      falsemeeting: false,
+      sendVal: false,
+      form: {
+        name: '',
+        role: '',
+        email: '',
+        remark: '',
+        pd: '123456'
+      },
+      options: [{
+        value: '研究生',
+        label: '研究生'
       }, {
-        content: '粘贴完整的会议链接并新建会议',
-        router: 'ParticipantInvite'
+        value: '博士生',
+        label: '博士生'
       }, {
-        content: '（可选）发送会议邀请邮件',
-        router: 'newpati'
+        value: '本科生',
+        label: '本科生'
       }, {
-        content: '查看会议议程',
-        router: 'MeetingProcess'
+        value: '教师',
+        label: '教师'
+      }, {
+        value: '特邀',
+        label: '特邀'
+      }, {
+        value: '其他',
+        label: '其他'
       }],
-      memberProcess: [{
-        content: '确认是否接受会议邀请，查看个人主页',
-        router: 'MyState'
-      }, {
-        content: '添加分享内容，选择参会形式',
-        router: 'newProcess'
-
-      }, {
-        content: '查看会议议程',
-        router: 'MeetingProcess'
-      }]
     };
   },
   computed: {
@@ -75,9 +94,30 @@ export default {
   created() {
   },
   methods: {
-    goToRoute(path) {
-      this.$router.push(path);
-    }
+    cancleCreate() {
+      this.form.name = ''
+      this.form.role = ''
+      this.form.email = ''
+      this.form.remark = ''
+      this.form.pd = '123456'
+    },
+    newpati() {
+      if (this.form.name == "") {
+        console.log("创建人员失败")
+        this.falsemeeting = true;
+      } else {
+        console.log("新建人员");
+        // 设置对应python的接口，这里使用的是localhost:5000
+        const path = '/api/newpati';
+        axios.post(path, { name: this.form.name, role: this.form.role, email: this.form.email, remark: this.form.remark, pd: this.form.pd }).then(res => {
+
+          this.sendVal = true;
+        }).catch(error => {
+          this.falsemeeting = true;
+          console.error(error);
+        });
+      }
+    },
   }
 };
 </script>

@@ -106,7 +106,7 @@ export default {
         time: "15min",
         people: '',
         role: '',
-        meetingid:'',
+        meetingid: '',
         participation: '',
         participation_mode: "线下参加",
         project: '',
@@ -115,7 +115,8 @@ export default {
         paper: '',
         nextweekplan: '',
         completion: '',
-        checkbox: []
+        checkbox: [],
+        id: 'default'
       }
     };
   },
@@ -125,6 +126,9 @@ export default {
   created() {
     this.getMeetingData();
     let userInfo = sessionStorage.getItem("userInfo");
+    let MyProcessData = sessionStorage.getItem('MyProcessData');
+    this.form.id = JSON.parse(MyProcessData).id;
+
     if (userInfo) {
       this.form.people = JSON.parse(userInfo).admin;
       this.form.topicName = this.form.people + "的会议分享"
@@ -175,14 +179,32 @@ export default {
     },
     newProcess() {
       const path = '/api/newProcess';
+      if (this.form.id === 'default') {
+        this.getparticipation();
+      }
       axios.post(path, { form: this.form })
         .then(res => {
-
           this.sendVal = true;
         }).catch(error => {
           console.error(error);
           this.falsemeeting2 = true;
         });
+    },
+    getparticipation() {
+      const path = '/api/getMyProcessData';
+      axios.post(path, { meetingid: this.meeting.id, people: this.userInfo.name }).then(res => {
+        this.myprocess = res.data.reslist[0];
+        sessionStorage.setItem(
+          "MyProcessData",
+          JSON.stringify({
+            id: this.myprocess.id,
+            participation: this.myprocess.participation
+          })
+        );
+      }).catch(error => {
+        console.error(error);
+        this.dialogVisible = true;
+      });
     },
   }
 };

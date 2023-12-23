@@ -13,6 +13,12 @@ const router = new Router({
       redirect: '/MeetingProcess',
       children: [
         {
+          path: '/MyState',
+          name: 'MyState',
+          meta: { title: '本人状态', requireLogin: true },
+          component: () => import('cmpt/visitorManage/MyState.vue')
+        },
+        {
           path: '/MeetingInfo',
           name: 'MeetingInfo',
           meta: { title: '当前会议简介', requireLogin: true },
@@ -99,7 +105,7 @@ const router = new Router({
         {
           path: '/newpati',
           name: 'newpati',
-          meta: { title: '新建人员', requireLogin: true },
+          meta: { title: '邮件邀请', requireLogin: true },
           component: () => import('cmpt/visitorManage/newpati.vue')
         },
         {
@@ -119,11 +125,16 @@ const router = new Router({
           name: 'accountsetting',
           meta: { title: '账户设置', requireLogin: true },
           component: () => import('cmpt/visitorManage/accountsetting.vue')
+        },        {
+          path: '/PersonManage',
+          name: 'PersonManage',
+          meta: { title: '人员管理', requireLogin: true },
+          component: () => import('cmpt/visitorManage/PersonManage.vue')
         },
         {
           path: '/Userhelper',
           name: 'Userhelper',
-          meta: { title: '用户指南', requireLogin: true },
+          meta: { title: '使用指南', requireLogin: true },
           component: () => import('cmpt/visitorManage/Userhelper.vue')
         },
         {
@@ -137,7 +148,7 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      meta: { title: '登陆' },
+      meta: { title: '登陆' ,requireLogin: false},
       component: () => import('./pages/login.vue')
     },
     {
@@ -184,12 +195,28 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const userInfo = sessionStorage.getItem('userInfo');
-  if (userInfo !== null || !to.meta.requireLogin || to.path === '/login') {
-    next();
+  const isLoginPage = to.path === '/login';
+
+  if (userInfo && isLoginPage) {
+    // 如果用户已登录，且尝试访问登录页，则重定向到主页或其他页面
+    next({ name: 'MyState' }); // 'home' 替换为你的主页路由名称
+  } else if (!userInfo && to.meta.requireLogin) {
+    // 如果用户未登录，且访问的页面需要登录，重定向到登录页
+    next({ path: '/login' });
   } else {
-    next({ name: 'login', params: { path: '/login' } });
+    // 其他情况，正常导航
+    next();
   }
 });
+
+// router.beforeEach((to, from, next) => {
+//   const userInfo = sessionStorage.getItem('userInfo');
+//   if (userInfo !== null || !to.meta.requireLogin || to.path === '/login') {
+//     next();
+//   } else {
+//     next({ name: 'login', params: { path: '/login' } });
+//   }
+// });
 
 router.afterEach(route => {
   if (route.meta.title) {

@@ -3,7 +3,7 @@
     <div class="ti">
       新建会议
     </div>
-    <el-card class="box-card">
+    <el-card class="box-card" v-loading="loading" element-loading-text="会议创建中请稍等。">
       <div class="tableTitle"><span class="midText">请输入完整的邀请内容：</span></div>
       <el-input type="textarea" :autosize="{ minRows: 10, maxRows: 10 }" placeholder="xxx 邀请您参加腾讯会议
 会议主题：xxx预定的会议
@@ -20,7 +20,7 @@ https://meeting.tencent.com/dm/xxxxxxxx
         <el-link type="primary" style=" font-size: larger;" href="https://meeting.tencent.com/user-center/schedule"
           target="_blank">没有预订会议？ 预约腾讯会议</el-link>
       </div>
-      <div class="tableTitle"><span class="midText">会议基本信息</span></div>
+      <div class="tableTitle"><span class="midText">会议基本信息（粘贴完整会议邀请可自动填写！！！）</span></div>
       <el-form ref="form" :model="form" label-width="120px">
         <el-form-item label="会议主题*">
           <el-input v-model="form.theme"></el-input>
@@ -43,7 +43,7 @@ https://meeting.tencent.com/dm/xxxxxxxx
           <el-input v-model="form.number"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="newmeeting">预定会议</el-button>
+          <el-button type="primary" @click="newmeeting">确认预定</el-button>
           <el-button>取消</el-button>
         </el-form-item>
       </el-form>
@@ -95,7 +95,8 @@ export default {
         link: '',
         number: '',
       },
-      textarea: ''
+      textarea: '',
+      loading: false
     };
   },
   mounted() {
@@ -277,11 +278,14 @@ export default {
           })
         );
         const path = '/api/newmeeting';
+        this.loading = true
         axios.post(path, { theme: this.form.theme, hoster: this.form.host, selectDay: this.form.selectDay, link: this.form.link, number: this.form.number }).then(res => {
           console.log(res);
+          this.loading = false
           this.sendVal = true;
         }).catch(error => {
           console.error(error);
+          this.loading = false
           this.falsemeeting2 = true;
         });
 

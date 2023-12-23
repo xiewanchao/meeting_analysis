@@ -6,7 +6,7 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-card class="invi-card" v-loading="loading" element-loading-text="邮件发送中，请稍等候一段时间">
+          <el-card class="invi-card" v-loading="loading" element-loading-text="邮件发送较慢，请勿关闭窗户，请稍等候一段时间">
             <div class="card-ti">
               邀请人员
             </div>
@@ -95,35 +95,6 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :span="12">
-          <el-card class="invi-card">
-            <!-- your content here -->
-            <div class="card-ti">
-              新建人员
-            </div>
-            <el-form ref="form" :model="form" label-width="120px">
-              <el-form-item label="姓名*">
-                <el-input v-model="form.name"></el-input>
-              </el-form-item>
-              <el-form-item label="角色*">
-                <el-select v-model="form.role" placeholder="请选择">
-                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="邮箱*">
-                <el-input v-model="form.email"></el-input>
-              </el-form-item>
-              <el-form-item label="备注">
-                <el-input v-model="form.remark"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="newpati">创建人员</el-button>
-                <el-button @click="cancleCreate">清除</el-button>
-              </el-form-item>
-            </el-form>
-          </el-card>
-        </el-col>
 
       </el-row>
 
@@ -149,32 +120,6 @@ export default {
       inviteData: [],
       multipleSelection: [],
       kb_content: '',
-      form: {
-        name: '',
-        role: '',
-        email: '',
-        remark: '',
-        pd:'123456'
-      },
-      options: [{
-        value: '研究生',
-        label: '研究生'
-      }, {
-        value: '博士生',
-        label: '博士生'
-      }, {
-        value: '本科生',
-        label: '本科生'
-      }, {
-        value: '教师',
-        label: '教师'
-      }, {
-        value: '特邀',
-        label: '特邀'
-      }, {
-        value: '其他',
-        label: '其他'
-      }],
       loading: false,
     };
   },
@@ -274,24 +219,6 @@ export default {
       //   path: 'newpati',
       //   // name: 'mallList',
       // })
-    },
-    newpati() {
-
-      if (this.form.name == "") {
-        console.log("创建人员失败")
-        this.falsemeeting = true;
-      } else {
-        console.log("新建人员");
-        // 设置对应python的接口，这里使用的是localhost:5000
-        const path = '/api/newpati';
-        axios.post(path, { name: this.form.name, role: this.form.role, email: this.form.email, remark: this.form.remark , pd: this.form.pd}).then(res => {
-
-          this.sendVal = true;
-        }).catch(error => {
-          this.falsemeeting = true;
-          console.error(error);
-        });
-      }
     },
   }
 };
