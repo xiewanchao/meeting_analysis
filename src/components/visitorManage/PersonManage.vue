@@ -4,6 +4,31 @@
       人员管理
     </div>
     <el-card class="box-card">
+      <el-card class="invi-card">
+        <div class="card-ti">
+          人员列表
+        </div>
+        <el-table :data="partiData" style="width: 100%" :default-sort="{ prop: 'date', order: 'descending' }">
+
+          <el-table-column prop="stuid" label="id" sortable align="center">
+          </el-table-column>
+          <el-table-column prop="name" label="姓名" sortable align="center">
+          </el-table-column>
+          <el-table-column prop="email" label="邮箱" sortable align="center" width="300px">
+          </el-table-column>
+          <el-table-column prop="role" label="角色" sortable align="center">
+          </el-table-column>
+          <el-table-column prop="remark" label="备注" sortable align="center" width="100px">
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" align="center">
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)" type="text" size="small">修改信息</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+      </el-card>
+
       <el-row :gutter="20">
 
         <el-col :span="12">
@@ -44,8 +69,37 @@
 
 
     </el-card>
-    <dialog-bar v-model="sendVal" type="confirm" content="参会人员创建成功" v-on:confirm="clickConfirm()"></dialog-bar>
-    <dialog-bar v-model="falsemeeting" type="confirm" content="参会人员创建失败" v-on:cancel="clickConfirm1()"></dialog-bar>
+    <dialog-bar v-model="sendVal" type="confirm" content="信息修改成功"></dialog-bar>
+    <dialog-bar v-model="falsemeeting" type="confirm" content="信息修改失败" ></dialog-bar>
+
+    <el-dialog title="修改用户信息" :visible.sync="dialogVisible" width="30%">
+      <el-form ref="tempform" :model="tempform" label-width="100px" style="margin-right: 20px;">
+        <el-form-item label="姓名*">
+          <el-input v-model="tempform.name"></el-input>
+        </el-form-item>
+        <el-form-item label="密码*">
+          <el-input v-model="tempform.pd"></el-input>
+        </el-form-item>
+        <el-form-item label="学号">
+          <el-input v-model="tempform.stuid"></el-input>
+        </el-form-item>
+        <el-form-item label="角色*">
+          <el-select v-model="tempform.role" placeholder="请选择">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="邮箱*">
+          <el-input v-model="tempform.email"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="tempform.remark"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="updatePati">确认修改</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -60,6 +114,16 @@ export default {
     return {
       falsemeeting: false,
       sendVal: false,
+      tempform: {
+        id: '',
+        name: '',
+        stuid: '',
+        role: '',
+        email: '',
+        remark: '',
+        ispermanent: '',
+        pd: '123456'
+      },
       form: {
         name: '',
         role: '',
@@ -86,12 +150,15 @@ export default {
         value: '其他',
         label: '其他'
       }],
+      partiData: [],
+      dialogVisible: false
     };
   },
   computed: {
 
   },
   created() {
+    this.getpatistateData()
   },
   methods: {
     cancleCreate() {
@@ -118,6 +185,36 @@ export default {
         });
       }
     },
+    getpatistateData() {
+      const path = '/api/getPatistate';
+      axios.post(path, { aaa: "hhhhhhh" }).then(res => {
+        this.partiData = res.data.reslist;
+        console.log(this.partiData);
+      }).catch(error => {
+        console.error(error);
+      });
+    },
+    handleClick(row) {
+      this.tempform.name = row.name
+      this.tempform.stuid = row.stuid
+      this.tempform.role = row.role
+      this.tempform.pd = row.pd
+      this.tempform.email = row.email
+      this.tempform.ispermanent = row.ispermanent
+      this.tempform.remark = row.remark
+      this.tempform.id = row.ID
+      this.dialogVisible = true
+    },
+    updatePati() {
+      const path = '/api/setOnePati';
+      axios.post(path, { form: this.tempform }).then(res => {
+        this.sendVal = true;
+        this.getpatistateData()
+      }).catch(error => {
+        this.falsemeeting = true;
+        console.error(error);
+      });
+    }
   }
 };
 </script>
