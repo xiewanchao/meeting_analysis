@@ -178,7 +178,7 @@ export default {
       console.log('点击了confirm');
     },
     newProcess() {
-      const path = '/api/newProcess';
+      const path = '/api/updateProcess';
       if (this.form.id === 'default') {
         this.getparticipation();
       }

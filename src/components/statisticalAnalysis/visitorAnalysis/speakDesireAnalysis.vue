@@ -10,27 +10,16 @@
         <el-col :span="12">
           <div style="margin-left: 5px">
             <!-- <div id="drawGuestEmotion" class="drawGuestEmotion" style="margin-left:5px;height:400px"></div> -->
-            <el-button @click="resetDateFilter" type="primary">新增</el-button>
+            <el-button @click="dialogVisible = true" type="primary">新增议程</el-button>
             <!-- <el-card style="height:400px">
         <speak-chart style="margin-top:-100px"></speak-chart>
         </el-card> -->
-            <el-table :data="topicData" style="width: 100%; margin-top: 5px" border :row-class-name="tableRowClassName">
+            <el-table :data="topicData" style="width: 100%; margin-top: 5px" border>
               <el-table-column prop="topicName" label="议程" width="180">
               </el-table-column>
               <el-table-column prop="people" label="主讲人" width="100">
               </el-table-column>
               <el-table-column prop="role" label="角色" width="100">
-              </el-table-column>
-              <el-table-column prop="state" label="主题状态" width="100">
-                <template scope="scope">
-                  <span>{{
-                    scope.row.state === 0
-                    ? "未开始"
-                    : scope.row.state === 1
-                      ? "进行中"
-                      : "已结束"
-                  }}</span>
-                </template>
               </el-table-column>
               <el-table-column prop="start_time" label="开始时间" width="100">
               </el-table-column>
@@ -38,14 +27,18 @@
               </el-table-column>
               <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="primary" v-show="scope.row.state === 0"
+                  <!-- 如果start_time为空，则显示开始按钮 -->
+                  <el-button size="mini" type="primary" v-show="!scope.row.start_time"
                     @click="handleStart(scope.$index, scope.row)">开始</el-button>
-                  <el-button size="mini" type="danger" v-show="scope.row.state === 1"
+                  <!-- 如果start_time不为空且end_time为空，则显示结束按钮 -->
+                  <el-button size="mini" type="danger" v-show="scope.row.start_time && !scope.row.end_time"
                     @click="handleEnd(scope.$index, scope.row)">结束</el-button>
-                  <el-button v-show="scope.row.state === 2" type="success" icon="el-icon-check" circle
-                    size="mini"></el-button>
+                  <!-- 如果start_time和end_time都不为空，则显示已完成标记 -->
+                  <el-button v-show="scope.row.start_time && scope.row.end_time" type="success" icon="el-icon-check"
+                    circle size="mini"></el-button>
                 </template>
               </el-table-column>
+
             </el-table>
           </div>
         </el-col>
@@ -92,8 +85,7 @@
                       <el-button style="float:right;margin-right:50px" type="primary">确定</el-button>
                     </div>
 
-                    <el-table :data="tableData" style="width: 100%:margin-top:10px" border
-                      :row-class-name="tableRowClassName" caption="表达欲望" height="250px">
+                    <el-table :data="tableData" style="width: 100%:margin-top:10px" border caption="表达欲望" height="250px">
                       <!-- <el-table-column prop="topic" label="当前主题" width="80">
             </el-table-column> -->
                       <el-table-column prop="name" label="姓名" fixed width="80">
@@ -185,6 +177,69 @@
         <el-col :span="9" v-show="false"> </el-col>
       </el-card>
     </div>
+
+    <el-dialog title="提示" :visible.sync="dialogVisible">
+      <div>
+        <el-form ref="form" :model="form" label-width="80px">
+
+          <el-form-item label="分享主题">
+            <el-input v-model="form.topicName" style="width: 40%" clearable></el-input>
+          </el-form-item>
+
+          <el-form-item label="分享时长">
+            <el-select v-model="form.time" placeholder="请选择时长">
+              <el-option label="10min" value="10min"></el-option>
+              <el-option label="15min" value="15min"></el-option>
+              <el-option label="20min" value="20min"></el-option>
+              <el-option label="30min" value="30min"></el-option>
+              <el-option label="45min" value="45min"></el-option>
+              <el-option label="60min" value="60min"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="分享人">
+            <el-input v-model="form.people" style="width: 40%" clearable></el-input>
+          </el-form-item>
+
+          <el-form-item label="角色*">
+            <el-select v-model="form.role" placeholder="请选择">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="参加形式">
+            <el-radio-group v-model="form.participation_mode">
+              <el-radio label="线下参加"></el-radio>
+              <el-radio label="线上参加"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="课题">
+            <el-select v-model="form.project" placeholder="请选择课题">
+              <el-option label="数字助教" value="数字助教"></el-option>
+              <el-option label="研讨会助" value="研讨会助"></el-option>
+              <el-option label="交易欺诈" value="交易欺诈"></el-option>
+              <el-option label="其他" value="其他"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="分享内容">
+            <el-checkbox-group v-model="form.checkbox" @change="checkboxchange">
+              <el-checkbox label="实验分析" name="type"></el-checkbox>
+              <el-checkbox label="算法模型" name="type"></el-checkbox>
+              <el-checkbox label="论文进展" name="type"></el-checkbox>
+              <el-checkbox label="下周计划" name="type"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -221,8 +276,54 @@ export default {
   },
   data() {
     return {
-      curmeeting: "2019年第一次会议",
-      meetingtime: "2019-05-01",
+      meeting: [],
+      curmeeting: "",
+      meetingtime: "",
+      topicData: [],
+      dialogVisible: false,
+      onlineParticipation: [],
+      offlineParticipation: [],
+      unParticipation: [],
+      timer: null,
+      falsemeeting2: false,
+      sendVal: false,
+      form: {
+        curmeeting: '',
+        topicName: '',
+        time: "15min",
+        people: '',
+        role: '',
+        meetingid: '',
+        participation: '',
+        participation_mode: "线下参加",
+        project: '',
+        experiment: '',
+        algorithm: '',
+        paper: '',
+        nextweekplan: '',
+        completion: '',
+        checkbox: [],
+        id: ''
+      },
+      options: [{
+        value: '研究生',
+        label: '研究生'
+      }, {
+        value: '博士生',
+        label: '博士生'
+      }, {
+        value: '本科生',
+        label: '本科生'
+      }, {
+        value: '教师',
+        label: '教师'
+      }, {
+        value: '特邀',
+        label: '特邀'
+      }, {
+        value: '其他',
+        label: '其他'
+      }],
       componentkey: 0,
       sliderValue: [0, 120], // 默认滑块范围是0到120
       startTime: new Date(2000, 0, 1, 0, 0, 0), // 起始时间，默认为 00:00:00
@@ -301,48 +402,48 @@ export default {
           name: "苏永甫",
         },
       ],
-      topicData: [
-        {
-          topicName: "开场白",
-          people: "苏永甫",
-          role: "学生/主持人",
-          state: 0, // 0，未开始，1，进行中，2，已结束
-          start_time: 0,
-          end_time: 0,
-        },
-        {
-          topicName: "外出调研分享",
-          people: "李银胜",
-          role: "教师/组织者",
-          state: 0, // 0，未开始，1，进行中，2，已结束
-          start_time: 0,
-          end_time: 0,
-        },
-        {
-          topicName: "供应链金融欺诈检测研究",
-          people: "吴斌",
-          role: "博士/参与者",
-          state: 0, // 0，未开始，1，进行中，2，已结束
-          start_time: 0,
-          end_time: 0,
-        },
-        {
-          topicName: "供应链施策仿真",
-          people: "王朔",
-          role: "硕士/参与者",
-          state: 0, // 0，未开始，1，进行中，2，已结束
-          start_time: 0,
-          end_time: 0,
-        },
-        {
-          topicName: "会议结束语",
-          people: "苏永甫",
-          role: "学生/主持人",
-          state: 0, // 0，未开始，1，进行中，2，已结束
-          start_time: 0,
-          end_time: 0,
-        },
-      ],
+      // topicData: [
+      //   {
+      //     topicName: "开场白",
+      //     people: "苏永甫",
+      //     role: "学生/主持人",
+      //     state: 0, // 0，未开始，1，进行中，2，已结束
+      //     start_time: 0,
+      //     end_time: 0,
+      //   },
+      //   {
+      //     topicName: "外出调研分享",
+      //     people: "李银胜",
+      //     role: "教师/组织者",
+      //     state: 0, // 0，未开始，1，进行中，2，已结束
+      //     start_time: 0,
+      //     end_time: 0,
+      //   },
+      //   {
+      //     topicName: "供应链金融欺诈检测研究",
+      //     people: "吴斌",
+      //     role: "博士/参与者",
+      //     state: 0, // 0，未开始，1，进行中，2，已结束
+      //     start_time: 0,
+      //     end_time: 0,
+      //   },
+      //   {
+      //     topicName: "供应链施策仿真",
+      //     people: "王朔",
+      //     role: "硕士/参与者",
+      //     state: 0, // 0，未开始，1，进行中，2，已结束
+      //     start_time: 0,
+      //     end_time: 0,
+      //   },
+      //   {
+      //     topicName: "会议结束语",
+      //     people: "苏永甫",
+      //     role: "学生/主持人",
+      //     state: 0, // 0，未开始，1，进行中，2，已结束
+      //     start_time: 0,
+      //     end_time: 0,
+      //   },
+      // ],
     };
   },
   mixins: [Fetch],
@@ -377,31 +478,75 @@ export default {
   },
   computed: {},
   methods: {
+
+    checkboxchange() {
+
+    },
+    onSubmit() {
+      if (this.form.checkbox.includes("实验分析")) {
+        this.form.experiment = "实验分析";
+      }
+      if (this.form.checkbox.includes("算法模型")) {
+        this.form.algorithm = "算法模型";
+      }
+      if (this.form.checkbox.includes("论文进展")) {
+        this.form.paper = "论文进展";
+      }
+      if (this.form.checkbox.includes("下周计划")) {
+        this.form.nextweekplan = "下周计划";
+      }
+
+      this.newProcess()
+    },
+    newProcess() {
+      const path = '/api/newProcess';
+      console.log(this.form)
+      axios.post(path, { form: this.form })
+        .then(res => {
+          this.$message({
+            type: "success",
+            message: "创建成功!"
+          });
+          this.getMeetingProcessData()
+        }).catch(error => {
+          this.$message({
+            type: "info",
+            message: "创建失败！"
+          });
+        });
+    },
     getMeetingData() {
       const path = '/api/getCurrentmeeting';
       return axios.post(path, { aaa: "hhhhhhh" })
         .then(res => {
           this.meeting = res.data.reslist[0];
-          this.meetingtime = this.meeting.date;
-          this.curmeeting = this.meeting.theme;
           console.log(this.meeting);
-          console.log(res);
+          this.meetingtime = this.meeting.Date;
+          this.curmeeting = this.meeting.Theme;
+          this.form.curmeeting = this.meeting.Theme;
+          this.form.meetingid = this.meeting.id;
+          sessionStorage.setItem(
+            "meetingInfo",
+            JSON.stringify({
+              id: this.meeting.id,
+              theme: this.meeting.curmeeting,
+              hoster: this.meeting.host,
+              selectDay: this.meeting.selectDay,
+              link: this.meeting.link,
+              number: this.meeting.number,
+              time: this.meeting.time,
+            })
+          );
         });
     },
     getMeetingProcessData() {
       const path = '/api/getMeetingProcessData';
-      return axios.post(path, { curmeeting: this.curmeeting })
+      axios.post(path, { meetingid: this.meeting.id })
         .then(res => {
-          this.topicData = res.data.reslist.map(item => ({
-            ...item,
-            state: 0,        // 0，未开始，1，进行中，2，已结束
-            start_time: 0,   // 默认值，可以根据需要设置
-            end_time: 0,     // 默认值，可以根据需要设置
-          }));
-          console.log(res);
+          this.topicData = res.data.reslist.filter(row => row.topicName !== null);
+          console.log(this.topicData);
         });
     },
-
     addProcess() {
       this.$router.push({ name: 'newProcess' });
     },
@@ -478,30 +623,37 @@ export default {
       };
       myChart.setOption(option);
     },
+    formatDate(date) {
+      const pad = (s) => (s < 10 ? '0' + s : s);
+      var year = date.getFullYear();
+      var month = pad(date.getMonth() + 1); // 月份是从0开始的
+      var day = pad(date.getDate());
+      var hour = pad(date.getHours());
+      var minute = pad(date.getMinutes());
+      var second = pad(date.getSeconds());
+      return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+    },
     handleStart(index, row) {
-      row.state = 1;
-      var currentDate = new Date();
-      var hour = currentDate.getHours();
-      var minutes = currentDate.getMinutes();
-      var seconds = currentDate.getSeconds();
-      row.start_time = hour + ":" + minutes + ":" + seconds;
-      currentTopic = row.topicName;
-      this.tableData[0].topic = currentTopic;
+      row.start_time = this.formatDate(new Date())
+      console.log(row)
+      const path = '/api/updateProcess';
+      axios.post(path, { form: row })
+        .then(res => {
+          console.log("开始时间设置成功")
+        }).catch(error => {
+          console.log("开始时间设置失败")
+        });
     },
     handleEnd(index, row) {
-      row.state = 2;
-      var currentDate = new Date();
-      var hour = currentDate.getHours();
-      var minutes = currentDate.getMinutes();
-      var seconds = currentDate.getSeconds();
-      row.end_time = hour + ":" + minutes + ":" + seconds;
-      this.tableData[0].topic = "转场";
-      if (index === this.topicData.length - 1) {
-        this.$message({
-          message: "本次会议成功结束",
-          type: "success",
+      row.end_time = this.formatDate(new Date())
+      console.log(row)
+      const path = '/api/updateProcess';
+      axios.post(path, { form: row })
+        .then(res => {
+          console.log("结束时间设置成功")
+        }).catch(error => {
+          console.log("结束时间设置失败")
         });
-      }
     },
     handleSpanMethod({ rowIndex, columnIndex }) {
       if (columnIndex === 0) {
